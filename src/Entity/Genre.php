@@ -3,44 +3,33 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\AuteurRepository;
+use App\Repository\GenreRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass=AuteurRepository::class)
+ * @ORM\Entity(repositoryClass=GenreRepository::class)
  */
-class Auteur
+class Genre
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"listGenreSimple", "listGenreFull"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"listGenreFull"})
+     * @Groups({"listGenreSimple", "listGenreFull"})
      */
-    private $nom;
+    private $libelle;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\OneToMany(targetEntity=Livre::class, mappedBy="genre")
      * @Groups({"listGenreFull"})
-     */
-    private $prenom;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Nationalite::class, inversedBy="auteurs")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"listGenreFull"})
-     */
-    private $Relation;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Livre::class, mappedBy="auteur")
      */
     private $livres;
 
@@ -54,38 +43,14 @@ class Auteur
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getLibelle(): ?string
     {
-        return $this->nom;
+        return $this->libelle;
     }
 
-    public function setNom(string $nom): self
+    public function setLibelle(string $libelle): self
     {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getPrenom(): ?string
-    {
-        return $this->prenom;
-    }
-
-    public function setPrenom(string $prenom): self
-    {
-        $this->prenom = $prenom;
-
-        return $this;
-    }
-
-    public function getRelation(): ?Nationalite
-    {
-        return $this->Relation;
-    }
-
-    public function setRelation(?Nationalite $Relation): self
-    {
-        $this->Relation = $Relation;
+        $this->libelle = $libelle;
 
         return $this;
     }
@@ -102,7 +67,7 @@ class Auteur
     {
         if (!$this->livres->contains($livre)) {
             $this->livres[] = $livre;
-            $livre->setAuteur($this);
+            $livre->setGenre($this);
         }
 
         return $this;
@@ -112,8 +77,8 @@ class Auteur
     {
         if ($this->livres->removeElement($livre)) {
             // set the owning side to null (unless already changed)
-            if ($livre->getAuteur() === $this) {
-                $livre->setAuteur(null);
+            if ($livre->getGenre() === $this) {
+                $livre->setGenre(null);
             }
         }
 

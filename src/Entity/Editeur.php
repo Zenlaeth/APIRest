@@ -3,15 +3,15 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\AuteurRepository;
+use App\Repository\EditeurRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass=AuteurRepository::class)
+ * @ORM\Entity(repositoryClass=EditeurRepository::class)
  */
-class Auteur
+class Editeur
 {
     /**
      * @ORM\Id
@@ -27,20 +27,7 @@ class Auteur
     private $nom;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"listGenreFull"})
-     */
-    private $prenom;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Nationalite::class, inversedBy="auteurs")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"listGenreFull"})
-     */
-    private $Relation;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Livre::class, mappedBy="auteur")
+     * @ORM\OneToMany(targetEntity=Livre::class, mappedBy="editeur")
      */
     private $livres;
 
@@ -66,30 +53,6 @@ class Auteur
         return $this;
     }
 
-    public function getPrenom(): ?string
-    {
-        return $this->prenom;
-    }
-
-    public function setPrenom(string $prenom): self
-    {
-        $this->prenom = $prenom;
-
-        return $this;
-    }
-
-    public function getRelation(): ?Nationalite
-    {
-        return $this->Relation;
-    }
-
-    public function setRelation(?Nationalite $Relation): self
-    {
-        $this->Relation = $Relation;
-
-        return $this;
-    }
-
     /**
      * @return Collection|Livre[]
      */
@@ -102,7 +65,7 @@ class Auteur
     {
         if (!$this->livres->contains($livre)) {
             $this->livres[] = $livre;
-            $livre->setAuteur($this);
+            $livre->setEditeur($this);
         }
 
         return $this;
@@ -112,8 +75,8 @@ class Auteur
     {
         if ($this->livres->removeElement($livre)) {
             // set the owning side to null (unless already changed)
-            if ($livre->getAuteur() === $this) {
-                $livre->setAuteur(null);
+            if ($livre->getEditeur() === $this) {
+                $livre->setEditeur(null);
             }
         }
 
